@@ -48,7 +48,9 @@ func getStockPrice(apiKey, ticker, date string) (float64, error) {
 		return 0, err
 	}
 
-	
+	// Print the response body for debugging
+	fmt.Println("API Response:", string(body))
+
 	var result AlphaVantageResponse
 
 	// unmarshals the response body into the result struct
@@ -133,8 +135,8 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 		startDateParsed = startDateParsed.AddDate(0, 0, -2)
 	}
 
-	// formats the start date to the expected format (also my birthday :D)
-	startDate = startDateParsed.Format("2005-07-21")
+	// formats the start date to the expected format
+	startDate = startDateParsed.Format("2006-01-02")
 
 	// gets the start price
 	startPrice, err := getStockPrice(apiKey, ticker, startDate)
@@ -171,7 +173,7 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// formats the end date to the expected format 
-	endDate := endDateParsed.Format("2005-07-21")
+	endDate := endDateParsed.Format("2006-01-02")
 
 	// gets the end price from the alpha vantage API
 	endPrice, err := getStockPrice(apiKey, ticker, endDate)
@@ -179,6 +181,7 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	// if there is an error, return an error
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching end price: %v", err), http.StatusInternalServerError)
+		fmt.Println("Error fetching end price. Response body:", string(err.(*json.UnmarshalTypeError).Value))
 		return
 	}
 
