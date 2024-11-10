@@ -13,29 +13,24 @@ function StockPriceViewer() {
     event.preventDefault();
 
     try {
-      const response = await fetch(`/stock?ticker=${ticker}&startingBalance=${startingBalance}&shares=${shares}&startDate=${startDate}`);
+      const response = await fetch(`http://localhost:8080/stock?ticker=${ticker}&startDate=${startDate}&shares=${shares}&startingBalance=${startingBalance}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
-      setResult(data);
+      console.log('Response data:', data);
+
+      setResult({
+        initialInvestment: data.initialInvestment,
+        finalInvestment: data.finalInvestment,
+        newBalance: data.newBalance
+      });
       setError(null);
-    } catch (err) {
+    } catch (error) {
+      console.error('Error fetching stock price:', error);
       setError('Failed to fetch stock data');
       setResult(null);
     }
-  };
-
-  const fetchStockData = () => {
-    fetch('http://localhost:8080/stock?ticker=QQQ&startDate=2024-08-07&shares=2&startingBalance=1000')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => console.log(data))
-      .catch(error => {
-        console.error('Error fetching stock data:', error);
-        setError('Failed to fetch stock data');
-      });
   };
 
   return (
@@ -92,13 +87,11 @@ function StockPriceViewer() {
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       {result && (
         <div>
-          <p>Initial Investment: ${result.initialInvestment.toFixed(2)}</p>
-          <p>Final Investment: ${result.finalInvestment.toFixed(2)}</p>
-          <p>New Balance: ${result.newBalance.toFixed(2)}</p>
+          <p>Initial Investment: ${result.initialInvestment?.toFixed(2) || 'N/A'}</p>
+          <p>Final Investment: ${result.finalInvestment?.toFixed(2) || 'N/A'}</p>
+          <p>New Balance: ${result.newBalance?.toFixed(2) || 'N/A'}</p>
         </div>
       )}
-
-      <button onClick={fetchStockData}>Check</button>
     </div>
   );
 }

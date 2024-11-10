@@ -206,6 +206,37 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// New handler function to get stock information
+func stockInfoHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse query parameters
+	ticker := r.URL.Query().Get("ticker")
+	date := r.URL.Query().Get("date")
+
+	// Validate input
+	if ticker == "" || date == "" {
+		http.Error(w, "Missing ticker or date", http.StatusBadRequest)
+		return
+	}
+
+	// Get stock price
+	price, err := getStockPrice(apiKey, ticker, date)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching stock price: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Create response
+	response := map[string]interface{}{
+		"ticker": ticker,
+		"date":   date,
+		"price":  price,
+	}
+
+	// Set content type and encode response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 // CORS middleware
 func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -225,15 +256,15 @@ func main() {
 	fs := http.FileServer(http.Dir("."))
 	http.Handle("/", fs)
 
-	// handles the API request
-	http.HandleFunc("/stock", stockHandler)
-
-	// Wrap the handler with the CORS middleware
+	// Register the /stock endpoint with CORS middleware
 	http.Handle("/stock", enableCORS(http.HandlerFunc(stockHandler)))
 
-	// logs the server start message
+	// Register the /stockinfo endpoint with CORS middleware
+	http.Handle("/stockinfo", enableCORS(http.HandlerFunc(stockInfoHandler)))
+
+	// Log the server start message
 	log.Println("Server started at :8080")
 
-	// starts the server
+	// Start the server
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
