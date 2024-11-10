@@ -206,6 +206,18 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// CORS middleware
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == "OPTIONS" {
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
 
 func main() {
 
@@ -215,6 +227,9 @@ func main() {
 
 	// handles the API request
 	http.HandleFunc("/stock", stockHandler)
+
+	// Wrap the handler with the CORS middleware
+	http.Handle("/stock", enableCORS(http.HandlerFunc(stockHandler)))
 
 	// logs the server start message
 	log.Println("Server started at :8080")

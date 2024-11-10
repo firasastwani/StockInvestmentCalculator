@@ -23,6 +23,21 @@ function StockPriceViewer() {
     }
   };
 
+  const fetchStockData = () => {
+    fetch('http://localhost:8080/stock?ticker=QQQ&startDate=2024-08-07&shares=2&startingBalance=1000')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => console.log(data))
+      .catch(error => {
+        console.error('Error fetching stock data:', error);
+        setError('Failed to fetch stock data');
+      });
+  };
+
   return (
     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
       <h1>Stock Price Checker</h1>
@@ -82,6 +97,8 @@ function StockPriceViewer() {
           <p>New Balance: ${result.newBalance.toFixed(2)}</p>
         </div>
       )}
+
+      <button onClick={fetchStockData}>Check</button>
     </div>
   );
 }
