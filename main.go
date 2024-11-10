@@ -22,7 +22,7 @@ type AlphaVantageResponse struct {
 func getStockPrice(apiKey, ticker, date string) (float64, error) {
 
 	// formats the url for the API request
-	url := fmt.Sprintf("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s", ticker, apiKey)
+	url := fmt.Sprintf("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=full&apikey=%s", ticker, apiKey)
 
 	resp, err := http.Get(url)
 
@@ -49,7 +49,7 @@ func getStockPrice(apiKey, ticker, date string) (float64, error) {
 	}
 
 	// Print the response body for debugging
-	fmt.Println("API Response:", string(body))
+	//fmt.Println("API Response:", string(body))
 
 	var result AlphaVantageResponse
 
