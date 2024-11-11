@@ -49,7 +49,7 @@ func getStockPrice(apiKey, ticker, date string) (float64, error) {
 	}
 
 	// Print the response body for debugging
-	//fmt.Println("API Response:", string(body))
+	fmt.Println("API Response:", string(body))
 
 	var result AlphaVantageResponse
 
@@ -181,7 +181,14 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	// if there is an error, return an error
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching end price: %v", err), http.StatusInternalServerError)
-		fmt.Println("Error fetching end price. Response body:", string(err.(*json.UnmarshalTypeError).Value))
+		
+		// Check if the error is of type *json.UnmarshalTypeError before accessing its fields
+		if unmarshalErr, ok := err.(*json.UnmarshalTypeError); ok {
+			fmt.Println("Error fetching end price. Response body:", unmarshalErr.Value)
+		} else {
+			fmt.Println("Error fetching end price:", err)
+		}
+		
 		return
 	}
 
