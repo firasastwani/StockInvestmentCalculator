@@ -162,7 +162,7 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// gets the current date
-	endDateParsed := time.Now()
+	endDateParsed := time.Now().AddDate(0, 0, -1)
 
 	// if the current date is a weekend, adjust the date to the previous business day
 	switch endDateParsed.Weekday() {
