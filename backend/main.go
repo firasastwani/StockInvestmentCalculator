@@ -49,7 +49,7 @@ func getStockPrice(apiKey, ticker, date string) (float64, error) {
 	}
 
 	// Print the response body for debugging
-	fmt.Println("API Response:", string(body))
+	//fmt.Println("API Response:", string(body))
 
 	var result AlphaVantageResponse
 
