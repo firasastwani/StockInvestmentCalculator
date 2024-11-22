@@ -10,6 +10,7 @@ A simple Go-based web service with a React frontend that calculates investment r
 - Validates if the investment amount is within the available balance
 - Serves both static files and API endpoints
 - Interactive React frontend for user input and result display
+- Tracks portfolio value over time
 
 ## Prerequisites
 
@@ -29,6 +30,11 @@ Calculates the investment return for a given stock.
 - `shares` - Number of shares to purchase
 - `startingBalance` - Initial available balance
 
+### GET /portfolio
+
+Fetches the current value of the user's portfolio.
+
+
 ## Frontend
 
 The frontend is built using React and provides a user-friendly interface for inputting stock data and viewing investment results.
@@ -38,6 +44,7 @@ The frontend is built using React and provides a user-friendly interface for inp
 - Input fields for stock ticker, starting balance, number of shares, and start date
 - Displays initial investment, final investment, and new balance
 - Error handling for failed API requests
+- Displays portfolio value over time
 
 ## Tech Stack
 
