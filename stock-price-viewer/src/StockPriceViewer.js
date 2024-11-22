@@ -1,5 +1,5 @@
 // src/StockPriceViewer.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function StockPriceViewer() {
   const [ticker, setTicker] = useState('');
@@ -8,6 +8,12 @@ function StockPriceViewer() {
   const [startDate, setStartDate] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = darkMode ? '#333' : '#fff';
+    document.body.style.color = darkMode ? '#fff' : '#000';
+  }, [darkMode]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,8 +39,34 @@ function StockPriceViewer() {
     }
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
+    <div style={{
+      maxWidth: '400px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: darkMode ? '#444' : '#f9f9f9',
+      color: darkMode ? '#fff' : '#000',
+      position: 'relative'
+    }}>
+      <button 
+        onClick={toggleDarkMode} 
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          backgroundColor: darkMode ? '#555' : '#ddd',
+          color: darkMode ? '#fff' : '#000',
+          border: 'none',
+          padding: '5px 10px',
+          cursor: 'pointer'
+        }}
+      >
+        {darkMode ? 'Light Mode' : 'Dark Mode'}
+      </button>
       <h1>Stock Price Checker</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '10px' }}>
