@@ -148,12 +148,14 @@ function StockPriceViewer() {
         </button>
       </form>
 
-      <button onClick={async () => {
-        const portfolioValue = await calculatePortfolioValue();
-        alert(`Current Portfolio Value: $${portfolioValue.toFixed(2)}`);
-      }} style={{ width: '100%', marginTop: '10px' }}>
-        Check Portfolio Value
-      </button>
+      {step === 2 && (
+        <button onClick={async () => {
+          const portfolioValue = await calculatePortfolioValue();
+          alert(`Current Portfolio Value: $${portfolioValue.toFixed(2)}`);
+        }} style={{ width: '100%', marginTop: '10px' }}>
+          Check Portfolio Value
+        </button>
+      )}
 
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
