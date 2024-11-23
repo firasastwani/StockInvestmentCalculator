@@ -12,6 +12,7 @@ function StockPriceViewer() {
   const [error, setError] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
   const [totalPortfolioValue, setTotalPortfolioValue] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#333' : '#fff';
@@ -24,6 +25,7 @@ function StockPriceViewer() {
       setCurrentBalance(parseFloat(startingBalance));
       setStep(2);
     } else if (step === 2) {
+      setIsLoading(true);
       try {
         const response = await fetch(`http://localhost:8080/stock?ticker=${ticker}&startDate=${startDate}&shares=${shares}&startingBalance=${currentBalance}`);
         if (!response.ok) {
@@ -49,6 +51,8 @@ function StockPriceViewer() {
       } catch (error) {
         console.error('Error fetching stock price:', error);
         setError('Failed to fetch stock data');
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -143,19 +147,10 @@ function StockPriceViewer() {
             </div>
           </>
         )}
-        <button type="submit" style={{ width: '100%' }}>
-          {step === 1 ? 'Set Starting Balance' : 'Add Investment'}
+        <button type="submit" style={{ width: '100%' }} disabled={isLoading}>
+          {isLoading ? 'Loading...' : (step === 1 ? 'Set Starting Balance' : 'Add Investment')}
         </button>
       </form>
-
-      {step === 2 && (
-        <button onClick={async () => {
-          const portfolioValue = await calculatePortfolioValue();
-          alert(`Current Portfolio Value: $${portfolioValue.toFixed(2)}`);
-        }} style={{ width: '100%', marginTop: '10px' }}>
-          Check Portfolio Value
-        </button>
-      )}
 
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
@@ -167,6 +162,7 @@ function StockPriceViewer() {
           </div>
         ))}
         <p>Total Portfolio Value: ${totalPortfolioValue.toFixed(2)}</p>
+        <p>Remaining Balance: ${currentBalance.toFixed(2)}</p>
       </div>
     </div>
   );
