@@ -78,7 +78,10 @@ function StockPriceViewer() {
       padding: '20px',
       backgroundColor: darkMode ? '#444' : '#f9f9f9',
       color: darkMode ? '#fff' : '#000',
-      position: 'relative'
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start'
     }}>
       <button 
         onClick={toggleDarkMode} 
@@ -154,7 +157,7 @@ function StockPriceViewer() {
 
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
-      <div>
+      <div style={{ alignSelf: 'flex-start' }}>
         <h2>Portfolio</h2>
         {portfolio.map((investment, index) => (
           <div key={index}>
@@ -163,6 +166,10 @@ function StockPriceViewer() {
         ))}
         <p>Total Portfolio Value: ${totalPortfolioValue.toFixed(2)}</p>
         <p>Remaining Balance: ${currentBalance.toFixed(2)}</p>
+        <p>Total Account Value: ${(parseFloat(totalPortfolioValue) + parseFloat(currentBalance)).toFixed(2)}</p>
+        <p style={{ color: ((parseFloat(totalPortfolioValue) + parseFloat(currentBalance)) > parseFloat(startingBalance)) ? 'green' : 'red' }}>
+          Percent Change: {(((parseFloat(totalPortfolioValue) + parseFloat(currentBalance) - parseFloat(startingBalance)) / parseFloat(startingBalance)) * 100).toFixed(2)}%
+        </p>
       </div>
     </div>
   );
