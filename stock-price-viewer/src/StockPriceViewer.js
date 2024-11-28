@@ -39,14 +39,16 @@ function StockPriceViewer() {
           purchasePrice: data.initialInvestment / parseFloat(shares),
         };
 
+        const costOfShares = newInvestment.purchasePrice * newInvestment.shares;
+        setCurrentBalance(prevBalance => prevBalance - costOfShares);
+
         setPortfolio([...portfolio, newInvestment]);
-        setCurrentBalance(data.newBalance);
         setTicker('');
         setShares('');
         setStartDate('');
         setError(null);
 
-        setTotalPortfolioValue(prevValue => prevValue + data.initialInvestment);
+        setTotalPortfolioValue(prevValue => prevValue + data.finalInvestment);
 
       } catch (error) {
         console.error('Error fetching stock price:', error);
