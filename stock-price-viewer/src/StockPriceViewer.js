@@ -1,5 +1,9 @@
 // src/StockPriceViewer.js
 import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
+
+ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale);
 
 function StockPriceViewer() {
   const [startingBalance, setStartingBalance] = useState('');
@@ -13,11 +17,37 @@ function StockPriceViewer() {
   const [darkMode, setDarkMode] = useState(false);
   const [totalPortfolioValue, setTotalPortfolioValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Portfolio Value Over Time',
+        data: [],
+        fill: false,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+      },
+    ],
+  });
 
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#333' : '#fff';
     document.body.style.color = darkMode ? '#fff' : '#000';
   }, [darkMode]);
+
+  const updateChartData = (newTotalValue) => {
+    const profitLoss = newTotalValue + currentBalance - parseFloat(startingBalance);
+    setChartData((prevData) => ({
+      ...prevData,
+      labels: [...prevData.labels, new Date().toLocaleString()],
+      datasets: [
+        {
+          ...prevData.datasets[0],
+          data: [...prevData.datasets[0].data, profitLoss],
+        },
+      ],
+    }));
+  };
 
   const handleNextStep = async (event) => {
     event.preventDefault();
@@ -39,14 +69,19 @@ function StockPriceViewer() {
           purchasePrice: data.initialInvestment / parseFloat(shares),
         };
 
+        const investmentCost = data.initialInvestment;
+        setCurrentBalance((prevBalance) => prevBalance - investmentCost);
+
         setPortfolio([...portfolio, newInvestment]);
-        setCurrentBalance(data.newBalance);
         setTicker('');
         setShares('');
         setStartDate('');
         setError(null);
 
-        setTotalPortfolioValue(prevValue => prevValue + data.initialInvestment);
+        const newTotalValue = await calculatePortfolioValue();
+        updateChartData(newTotalValue);
+
+        setTotalPortfolioValue(newTotalValue);
 
       } catch (error) {
         console.error('Error fetching stock price:', error);
@@ -171,6 +206,7 @@ function StockPriceViewer() {
           Percent Change: {(((parseFloat(totalPortfolioValue) + parseFloat(currentBalance) - parseFloat(startingBalance)) / parseFloat(startingBalance)) * 100).toFixed(2)}%
         </p>
       </div>
+      <Line data={chartData} />
     </div>
   );
 }
