@@ -16,7 +16,7 @@ A simple Go-based web service with a React frontend that calculates investment r
 
 - Go 1.x installed
 - Node.js and npm installed
-- Alpha Vantage API key (currently using a demo key)
+
 
 ## API Endpoint
 
