@@ -69,8 +69,8 @@ function StockPriceViewer() {
           purchasePrice: data.initialInvestment / parseFloat(shares),
         };
 
-        const investmentCost = data.initialInvestment;
-        setCurrentBalance((prevBalance) => prevBalance - investmentCost);
+        const costOfShares = newInvestment.purchasePrice * newInvestment.shares;
+        setCurrentBalance(prevBalance => prevBalance - costOfShares);
 
         setPortfolio([...portfolio, newInvestment]);
         setTicker('');
@@ -79,9 +79,8 @@ function StockPriceViewer() {
         setError(null);
 
         const newTotalValue = await calculatePortfolioValue();
+        setTotalPortfolioValue(prevValue => prevValue + data.finalInvestment);
         updateChartData(newTotalValue);
-
-        setTotalPortfolioValue(newTotalValue);
 
       } catch (error) {
         console.error('Error fetching stock price:', error);
