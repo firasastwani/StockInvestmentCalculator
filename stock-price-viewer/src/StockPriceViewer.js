@@ -1,5 +1,5 @@
-// src/StockPriceViewer.js
 import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
 
 function StockPriceViewer() {
   const [startingBalance, setStartingBalance] = useState('');
@@ -13,6 +13,7 @@ function StockPriceViewer() {
   const [darkMode, setDarkMode] = useState(false);
   const [totalPortfolioValue, setTotalPortfolioValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [stockPrices, setStockPrices] = useState([0]);
 
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#333' : '#fff';
@@ -50,6 +51,7 @@ function StockPriceViewer() {
 
         setTotalPortfolioValue(prevValue => prevValue + data.finalInvestment);
 
+        addStockPrice(); // Update chart with new total account value
       } catch (error) {
         console.error('Error fetching stock price:', error);
         setError('Failed to fetch stock data');
@@ -71,6 +73,27 @@ function StockPriceViewer() {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+
+  const addStockPrice = () => {
+    const totalAccountValue = parseFloat(totalPortfolioValue) + parseFloat(currentBalance); // Total account value
+    const difference = totalAccountValue - parseFloat(startingBalance); // Growth or decline from starting balance
+    setStockPrices((prevPrices) => [...prevPrices, difference]); // Add difference to chart
+  };
+
+  const data = {
+    labels: stockPrices.map((_, index) => `Point ${index + 1}`),
+    datasets: [
+      {
+        label: 'Stock Prices',
+        data: stockPrices,
+        fill: false,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 2,
+        tension: 0.1,
+      },
+    ],
   };
 
   return (
@@ -173,6 +196,22 @@ function StockPriceViewer() {
           Percent Change: {(((parseFloat(totalPortfolioValue) + parseFloat(currentBalance) - parseFloat(startingBalance)) / parseFloat(startingBalance)) * 100).toFixed(2)}%
         </p>
       </div>
+
+      <Line data={data} />
+      <button onClick={() => addStockPrice()} 
+        style={{
+          position: 'absolute',
+          bottom: '10px',
+          right: '10px',
+          backgroundColor: darkMode ? '#555' : '#ddd',
+          color: darkMode ? '#fff' : '#000',
+          border: 'none',
+          padding: '5px 10px',
+          cursor: 'pointer'
+        }}
+      >
+        Add Stock Price Change
+      </button>
     </div>
   );
 }
